@@ -8,7 +8,19 @@ import axios from "axios";
 import { reducerCases } from "../utils/Constants";
 export default function PlayerControls() {
     const [{token,playerState},dispatch]=useStateProvider();
-    
+    const changeState=async ()=>{
+      const state=playerState?"pause":"play";
+      await axios.put(`https://api.spotify.com/v1/me/player/${state}`,
+        {},
+        {
+            headers: {
+                 Authorization: "Bearer "+token,
+                 "Content-Type":"application/json",
+            },
+        }
+    );    
+    dispatch({ type: reducerCases.SET_PLAYER_STATE, playerState: !playerState });
+    };  
     const changeTrack=async (type)=>{
         await axios.post(`https://api.spotify.com/v1/me/player/${type}`,
         {},
@@ -46,19 +58,7 @@ export default function PlayerControls() {
     }
 
 };
-const changeState=async ()=>{
-  const state=playerState?"pause":"play";
-  const response=await axios.put(`https://api.spotify.com/v1/me/player/${state}`,
-    {},
-    {
-        headers: {
-             Authorization: "Bearer "+token,
-             "Content-Type":"application/json",
-        },
-    }
-);    
-dispatch({ type: reducerCases.SET_PLAYER_STATE, playerState: !playerState });
-};  
+
   return (
     <Container>
       <div className="shuffle">
